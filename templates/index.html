@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}ivx/ai Chat — a chat client that runs entirely in your browser{% include "partials/search.html" %}
+{% endblock %}
+
+{% block body %}
+<a class="skip" href="#main">Skip to content</a>
+
+{% include "partials/nav.html" %}
+
+<main id="main">
+
+<header class="hero">
+  <div class="wrap wrap--wide hero__inner">
+    <div class="hero__text">
+      <p class="hero__meta"><span class="dot" aria-hidden="true"></span>Free and Open Source</p>
+      <h1 class="hero__title">A chat client that runs entirely in your browser.</h1>
+      <p class="hero__lede">
+        No backend, no accounts, no analytics, no telemetry. Point it at a model
+        on your own machine or bring an API key — the app talks to that endpoint
+        directly, and your conversations and keys stay in your browser.
+      </p>
+
+      <div class="cmd">
+        <code class="cmd__text" id="install-cmd"><span class="cmd__sigil">$</span>brew install --cask ivxai-chat</code>
+        <button class="cmd__copy" type="button" data-copy="install-cmd" aria-label="Copy install command">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 1H2a1 1 0 00-1 1v9h1.5V2.5H10V1z"/><path d="M14 4H5a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V5a1 1 0 00-1-1zm-.5 9.5h-8v-8h8v8z"/></svg>
+          <span class="cmd__copy-label">copy</span>
+        </button>
+      </div>
+
+      <div class="hero__actions">
+        <a href="/chat" class="btn btn--solid">Try it</a>
+        <a href="https://github.com/ivxlabs/ivxai-app" class="btn btn--ghost">Desktop app</a>
+      </div>
+    </div>
+
+    <div class="hero__demo">
+      <div class="win">
+        <div class="win__bar">
+          <span class="win__title">
+            <b class="win__title-main">ivx/ai Chat</b>
+            <span class="win__title-sub">ai.ivx.run/chat</span>
+          </span>
+          <span class="win__controls" aria-hidden="true">
+            <span class="win__btn">
+              <svg viewBox="0 0 10 10"><path d="M2 5h6"/></svg>
+            </span>
+            <span class="win__btn">
+              <svg viewBox="0 0 10 10"><rect x="2.2" y="2.2" width="5.6" height="5.6" rx="1.2"/></svg>
+            </span>
+            <span class="win__btn">
+              <svg viewBox="0 0 10 10"><path d="M2.4 2.4l5.2 5.2M7.6 2.4l-5.2 5.2"/></svg>
+            </span>
+          </span>
+        </div>
+        <div class="win__body">
+          <iframe src="https://ai.ivx.run/chat" title="ivx/ai Chat" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="privacy">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label"><span>01</span>privacy</p>
+      <h2 class="sec-title">Private by default</h2>
+    </div>
+
+    <ul class="checks checks--split">
+      <li>
+        <b>No third-party code at runtime.</b> Halfmoon CSS and IBM Plex are
+        bundled and served from your own origin. No CDNs, no Google Fonts, no
+        trackers, no analytics, no telemetry.
+      </li>
+      <li>
+        <b>A Content-Security-Policy that enforces it.</b>
+        <code>script-src 'self'</code> — the page cannot execute code from
+        anywhere else, even if something tried.
+      </li>
+      <li>
+        <b>Only the requests you asked for.</b> Chat completions and model lists,
+        to the base URL you configured. Check it in the Network panel.
+      </li>
+      <li>
+        <b>Your data stays put.</b> Conversations and messages live in IndexedDB.
+        Keys live there too, optionally encrypted with a passphrase you choose.
+      </li>
+    </ul>
+
+    <p class="note">
+      By default keys sit in IndexedDB in the clear, like every other web app's
+      data. <b>Settings → Privacy &amp; data → Encrypt API keys</b> wraps them in
+      AES-GCM under a key derived from your passphrase (PBKDF2-SHA256,
+      310&nbsp;000 iterations), held in memory only — so you unlock once per
+      session and can re-lock from the sidebar. There is no recovery path: lose
+      the passphrase, lose the keys.
+    </p>
+  </div>
+</section>
+
+<section class="section" id="providers">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label"><span>02</span>providers</p>
+      <h2 class="sec-title">Supported Providers</h2>
+    </div>
+
+    <div class="search">
+      <label class="search__field">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input type="search" id="docsearch" placeholder="Search the documentation" autocomplete="off" spellcheck="false">
+      </label>
+      <ul class="search__results" id="docsearch-results" hidden></ul>
+    </div>
+
+    <p class="note">
+      Point <em>Custom OpenAI-compatible</em> at anything else speaking the
+      OpenAI chat API. Some APIs refuse calls made from a browser; the desktop
+      app carries a small proxy that gets around it, with nothing to configure.
+    </p>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label"><span>03</span>features</p>
+      <h2 class="sec-title">What it does, and what's coming</h2>
+    </div>
+
+    <div class="feat">
+      <div class="feat__col">
+        <p class="feat__label">available now</p>
+        <ul class="feat__list">
+          <li>Support for multiple providers</li>
+          <li>Easy to use</li>
+          <li>Clean UI</li>
+          <li>Cross platform, with apps for most major operating systems</li>
+          <li>Lightweight, and usable directly over a browser</li>
+        </ul>
+      </div>
+      <div class="feat__col">
+        <p class="feat__label">planned</p>
+        <ul class="feat__list feat__list--planned">
+          <li>Sync with multiple cloud services</li>
+          <li>Share chats anonymously</li>
+          <li>MCP support</li>
+          <li>Tools</li>
+          <li>A store for connectors and skills</li>
+          <li>Chat organization</li>
+          <li>WebLLM inference, via MLC</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="install">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label"><span>04</span>install</p>
+      <h2 class="sec-title">Running it</h2>
+    </div>
+
+    <div class="steps">
+      <article class="step">
+        <p class="step__n">01</p>
+        <h3 class="step__title">In the browser</h3>
+        <p class="step__desc">Choose <em>Install</em> / <em>Add to Home Screen</em> to keep it as an app; after the first load it works offline.</p>
+        <pre class="step__code"><code>ai.ivx.run/chat</code></pre>
+      </article>
+      <article class="step">
+        <p class="step__n">02</p>
+        <h3 class="step__title">The desktop app</h3>
+        <p class="step__desc">The same UI in a native window, with the same bridge running inside it. Nothing to configure.</p>
+        <pre class="step__code"><code><span class="o-sigil">$</span> brew tap ivxlabs/tap
+<span class="o-sigil">$</span> brew install \
+    --cask ivxai-chat</code></pre>
+      </article>
+      <article class="step">
+        <p class="step__n">03</p>
+        <h3 class="step__title">From source</h3>
+        <p class="step__desc"><code>dist/</code> is plain static files with a relative base, so it drops into any host or subdirectory.</p>
+        <pre class="step__code"><code><span class="o-sigil">$</span> npm install
+<span class="o-sigil">$</span> npm run build</code></pre>
+      </article>
+    </div>
+
+    <p class="note">
+      Windows and Linux: take the installer from Releases. Nothing is notarised
+      or signed with a paid certificate, so Gatekeeper and SmartScreen both
+      object on first launch — the release notes say how to get past it.
+    </p>
+  </div>
+</section>
+
+<section class="section" id="contribute">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label"><span>05</span>source</p>
+      <h2 class="sec-title">Free software</h2>
+    </div>
+    <ul class="contrib">
+      <li class="contrib__item">
+        <a href="https://github.com/ivxlabs/chat">
+          <span class="contrib__kind">web</span>
+          <span class="contrib__body">
+            <span class="contrib__title">ivxlabs/chat</span>
+            <span class="contrib__desc">The browser app.</span>
+          </span>
+          <span class="contrib__go" aria-hidden="true">&rarr;</span>
+        </a>
+      </li>
+      <li class="contrib__item">
+        <a href="https://github.com/ivxlabs/ivxai-app">
+          <span class="contrib__kind">app</span>
+          <span class="contrib__body">
+            <span class="contrib__title">ivxlabs/ivxai-app</span>
+            <span class="contrib__desc">The desktop app, and the standalone CORS bridge it is built around.</span>
+          </span>
+          <span class="contrib__go" aria-hidden="true">&rarr;</span>
+        </a>
+      </li>
+    </ul>
+
+    <p class="note">
+      Free software under the GNU GPL v3.0 or later. You may use, study, share
+      and modify it; a distributed modification has to carry the same licence
+      with its source available.
+    </p>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap cta__inner">
+    <h2 class="cta__title">No ads, no telemetry, no paid tier.</h2>
+    <p class="cta__desc">
+      ivx/ai Chat is part of ivx research's effort to strip trackers and
+      advertising out of privacy-critical infrastructure, and to make
+      open-weight models a practical default.
+    </p>
+    <div class="hero__actions">
+      <a href="/chat" class="btn btn--solid">Try it</a>
+      <a class="cta__star" href="https://github.com/ivxlabs/ivxai-app">
+        <img src="https://img.shields.io/github/stars/ivxlabs/ivxai-app?style=social"
+             alt="Stars on GitHub" height="20">
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+{% include "partials/footer.html" %}
+
+<script>
+  document.querySelectorAll('.cmd__copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var src = document.getElementById(btn.dataset.copy);
+      if (!src || !navigator.clipboard) return;
+      var text = src.textContent.replace(/^\s*\$\s*/, '');
+      navigator.clipboard.writeText(text).then(function () {
+        var label = btn.querySelector('.cmd__copy-label');
+        var prev = label.textContent;
+        label.textContent = 'copied';
+        btn.classList.add('is-copied');
+        setTimeout(function () {
+          label.textContent = prev;
+          btn.classList.remove('is-copied');
+        }, 1600);
+      });
+    });
+  });
+</script>
+{% include "partials/search.html" %}
+{% endblock %}

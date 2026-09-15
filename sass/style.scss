@@ -1,0 +1,937 @@
+// ═══════════════════════════════════════════════════════════
+//  ivx/ai — minimal terminal
+//  Flat void, floating surfaces, one accent, lots of air.
+// ═══════════════════════════════════════════════════════════
+
+// ── Tokens ──────────────────────────────────────────────────
+$bg:        #0a0c0d;   // the void — everything sits on this
+$surface:   #14191a;   // raised, always elevated by shadow
+$surface-2: #1a2021;   // hover
+
+$hair:      rgba(255, 255, 255, 0.055);   // dividers, barely there
+$hair-lit:  rgba(255, 255, 255, 0.10);
+$edge:      rgba(255, 255, 255, 0.05);    // top highlight on raised surfaces
+
+$ink:       #e4eae9;
+$ink-dim:   #8d9b99;
+$ink-mute:  #5a6968;
+
+$acc:       #eeeeee;
+$acc-on:    #0a0c0d;   // text on a filled accent surface
+
+$mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+$sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+$r:    6px;
+$r-lg: 10px;
+
+// Layered elevation — soft, wide, never a hard drop
+$sh-sm:
+  0 1px 2px rgba(0, 0, 0, 0.5),
+  0 4px 12px -4px rgba(0, 0, 0, 0.55);
+$sh-md:
+  0 1px 2px rgba(0, 0, 0, 0.5),
+  0 10px 26px -10px rgba(0, 0, 0, 0.65),
+  0 28px 60px -28px rgba(0, 0, 0, 0.75);
+$sh-lg:
+  0 1px 3px rgba(0, 0, 0, 0.55),
+  0 18px 40px -16px rgba(0, 0, 0, 0.7),
+  0 48px 100px -40px rgba(0, 0, 0, 0.9);
+
+@mixin raised($shadow: $sh-md) {
+  background: $surface;
+  border-radius: $r-lg;
+  box-shadow: inset 0 1px 0 $edge, $shadow;
+}
+
+// ── Reset ───────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: $sans;
+  font-size: 15px;
+  line-height: 1.65;
+  background: $bg;
+  color: $ink;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+img, svg, iframe { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+:focus-visible { outline: 2px solid $acc; outline-offset: 4px; border-radius: 2px; }
+::selection { background: rgba(255, 255, 255, 0.18); color: #fff; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 200;
+  font-family: $mono; font-size: 0.8rem;
+  padding: 10px 16px; background: $acc; color: $acc-on;
+  &:focus { left: 14px; top: 14px; }
+}
+
+// ── Layout ──────────────────────────────────────────────────
+.wrap {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.wrap--wide { max-width: 1200px; }
+
+.section { padding: 168px 0; }   // air, not rules, separates sections
+
+.sec-head { margin-bottom: 84px; }
+
+.sec-label {
+  display: flex; align-items: center; gap: 12px;
+  font-family: $mono; font-size: 0.7rem; font-weight: 400;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: $ink-mute;
+  margin-bottom: 22px;
+
+  span { color: $acc; letter-spacing: 0.1em; }   // plain number, no chip
+}
+
+.sec-title {
+  font-family: $mono;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.prose {
+  color: $ink-dim;
+  font-size: 1rem;
+  line-height: 1.75;
+  max-width: 46ch;
+
+  + .prose { margin-top: 22px; }
+}
+
+// trailing clarification under a section
+.note {
+  margin-top: 40px;
+  padding-left: 20px;
+  color: $ink-mute;
+  font-size: 0.88rem;
+  line-height: 1.75;
+  max-width: 62ch;
+
+  b { color: $ink-dim; font-weight: 500; }
+  em { color: $ink-dim; font-style: normal; }
+  + .note { margin-top: 18px; }
+}
+
+// inline code inside prose — never break a token across lines
+code {
+  font-family: $mono;
+  font-size: 0.88em;
+  color: $ink;
+}
+
+.prose code, .checks code, .step__desc code, .note code { white-space: nowrap; }
+
+// ── Accents ─────────────────────────────────────────────────
+.dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: $ink-mute;
+  flex: none;
+}
+
+// ── Buttons ─────────────────────────────────────────────────
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: $mono; font-size: 0.82rem; font-weight: 500;
+  letter-spacing: -0.01em;
+  padding: 13px 22px;
+  border-radius: $r;
+  transition: background 0.18s ease, box-shadow 0.18s ease,
+              transform 0.18s ease, color 0.18s ease;
+
+  svg { width: 15px; height: 15px; fill: currentColor; flex: none; }
+
+  &--solid {
+    background: $acc; color: $acc-on; font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45), 0 12px 30px -12px rgba(0, 0, 0, 0.7);
+    &:hover {
+      background: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), 0 18px 40px -14px rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  &--ghost {
+    color: $ink;
+    background: $surface;
+    box-shadow: inset 0 1px 0 $edge, $sh-sm;
+    &:hover {
+      background: $surface-2;
+      transform: translateY(-1px);
+      box-shadow: inset 0 1px 0 $edge, $sh-md;
+    }
+  }
+}
+
+.link-arrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: $mono; font-size: 0.82rem;
+  color: $acc;
+  transition: gap 0.18s ease;
+  &:hover { gap: 12px; }
+}
+
+// ── Nav ─────────────────────────────────────────────────────
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba($bg, 0.72);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+
+  &__inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px;
+  }
+
+  &__brand {
+    font-family: $mono; font-size: 0.98rem; font-weight: 600;
+    color: #fff; letter-spacing: -0.02em;
+  }
+
+  &__slash { color: $acc; }
+
+  &__links {
+    display: flex; gap: 34px;
+    font-family: $mono; font-size: 0.8rem;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+
+    a {
+      color: $ink-mute;
+      transition: color 0.18s ease;
+      &:hover { color: $ink; }
+    }
+  }
+
+  &__star {
+    display: inline-flex; align-items: center;
+    img { display: block; height: 20px; width: auto; }
+  }
+}
+
+// ── Hero ────────────────────────────────────────────────────
+.hero {
+  padding: 112px 0 168px;
+
+  &__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+    gap: 64px;
+    align-items: center;
+  }
+
+  &__meta {
+    display: inline-flex; align-items: center; gap: 11px;
+    font-family: $mono; font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: $ink-mute;
+    margin-bottom: 34px;
+  }
+
+  &__title {
+    font-family: $mono;
+    font-size: clamp(1.9rem, 4.1vw, 2.55rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.045em;
+    color: #fff;
+    margin-bottom: 26px;
+  }
+
+  &__lede {
+    color: $ink-dim;
+    font-size: 1.02rem;
+    line-height: 1.75;
+    max-width: 42ch;
+    margin-bottom: 40px;
+  }
+
+  &__actions { display: flex; flex-wrap: wrap; gap: 14px; }
+
+  &__demo-note {
+    font-family: $mono; font-size: 0.72rem;
+    color: $ink-mute;
+    margin-top: 22px;
+    text-align: center;
+  }
+}
+
+// ── Copyable command ────────────────────────────────────────
+.cmd {
+  display: flex; align-items: stretch;
+  @include raised($sh-sm);
+  border-radius: $r;
+  margin-bottom: 40px;
+  max-width: 430px;
+  overflow: hidden;
+
+  &__text {
+    flex: 1 1 auto;
+    display: flex; align-items: center; gap: 11px;
+    font-family: $mono; font-size: 0.82rem;
+    color: $ink;
+    padding: 15px 18px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  &__sigil { color: $ink-mute; user-select: none; }
+
+  &__copy {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: $mono; font-size: 0.72rem;
+    color: $ink-mute;
+    padding: 0 18px;
+    transition: color 0.18s ease, background 0.18s ease;
+
+    svg { width: 13px; height: 13px; fill: currentColor; }
+    &:hover { color: $ink; background: $surface-2; }
+    &.is-copied { color: $acc; }
+  }
+}
+
+// ── Window (live demo) — libadwaita / GNOME ─────────────────
+// Adwaita dark: window #242424, headerbar #303030, 12px corners,
+// circular symbolic window controls on the right.
+$adw-window: #242424;
+$adw-header: #303030;
+$adw-line:   rgba(255, 255, 255, 0.09);
+
+.win {
+  border-radius: 12px;
+  background: $adw-window;
+  border: 1px solid $adw-line;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    0 10px 24px -6px rgba(0, 0, 0, 0.55),
+    0 34px 70px -20px rgba(0, 0, 0, 0.8),
+    0 72px 130px -50px rgba(0, 0, 0, 0.95);
+
+  &__bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 14px;
+    height: 47px;                       // Adwaita headerbar
+    padding: 0 8px 0 14px;
+    background: $adw-header;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  // AdwWindowTitle — title over dim subtitle, optically centred
+  &__title {
+    grid-column: 2;
+    justify-self: center;
+    text-align: center;
+    line-height: 1.2;
+    font-family: $sans;
+  }
+
+  &__title-main {
+    display: block;
+    font-size: 0.82rem; font-weight: 700;
+    color: #fff;
+  }
+
+  &__title-sub {
+    display: block;
+    font-size: 0.7rem; font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  &__controls {
+    grid-column: 3;
+    justify-self: end;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  &__btn {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+
+    svg {
+      width: 10px; height: 10px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+    }
+  }
+
+  &__body {
+    height: clamp(460px, 64vh, 640px);   // scales with the viewport
+    background: $adw-window;
+    iframe { width: 100%; height: 100%; border: 0; }
+  }
+}
+
+// ── Capabilities ────────────────────────────────────────────
+.spec {
+  &__row {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr) 150px;
+    gap: 32px;
+    align-items: baseline;
+    padding: 34px 20px;
+    border-radius: $r-lg;
+    border-bottom: 1px solid $hair;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+
+    &:last-child { border-bottom: 0; }
+
+    &:hover {
+      background: $surface;
+      border-bottom-color: transparent;
+      box-shadow: inset 0 1px 0 $edge, $sh-md;
+      .spec__key { color: $acc; }
+    }
+  }
+
+  &__key {
+    font-family: $mono; font-size: 0.95rem; font-weight: 500;
+    color: #fff;
+    letter-spacing: -0.01em;
+    transition: color 0.2s ease;
+
+    a { display: block; }
+  }
+
+  &__desc {
+    color: $ink-dim; font-size: 0.95rem; line-height: 1.7;
+
+    &--mono {
+      font-family: $mono;
+      font-size: 0.82rem;
+      color: $ink;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__tag {
+    font-family: $mono; font-size: 0.72rem;
+    color: $ink-mute;
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+// ── Check lists ─────────────────────────────────────────────
+.checks {
+  margin: 36px 0;
+  display: grid;
+  gap: 16px;
+
+  &--split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px 56px;
+    margin: 0;
+  }
+
+  li {
+    position: relative;
+    padding-left: 28px;
+    font-size: 0.93rem;
+    line-height: 1.7;
+    color: $ink-dim;
+
+    b { color: $ink; font-weight: 500; }
+
+    &::before {
+      content: '\2713';
+      position: absolute; left: 0; top: 0;
+      font-family: $mono; font-size: 0.85rem;
+      color: $acc;
+    }
+  }
+}
+
+.o-sigil { color: $ink-mute; user-select: none; }
+
+// ── Deploy steps — separate floating cards ──────────────────
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.step {
+  @include raised($sh-md);
+  padding: 36px 30px 32px;
+  display: flex; flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: inset 0 1px 0 $edge, $sh-lg;
+  }
+
+  &__n {
+    font-family: $mono; font-size: 0.72rem;
+    color: $acc;
+    letter-spacing: 0.16em;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    font-family: $mono; font-size: 0.98rem; font-weight: 500;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 11px;
+  }
+
+  &__desc {
+    color: $ink-dim;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 28px;
+    flex: 1;
+  }
+
+  &__code {
+    font-family: $mono; font-size: 0.72rem;
+    line-height: 1.8;
+    color: $ink;
+    background: rgba(0, 0, 0, 0.32);
+    border-radius: $r;
+    padding: 15px 16px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+}
+
+// ── Who it's for ────────────────────────────────────────────
+.who {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 44px;
+
+  &__role {
+    font-family: $mono; font-size: 0.85rem; font-weight: 500;
+    color: $acc;
+    margin-bottom: 14px;
+  }
+
+  &__desc { color: $ink-dim; font-size: 0.9rem; line-height: 1.7; }
+}
+
+// ── Contribute ──────────────────────────────────────────────
+.contrib {
+  &__item {
+    a {
+      display: grid;
+      grid-template-columns: 90px minmax(0, 1fr) 24px;
+      gap: 32px;
+      align-items: center;
+      padding: 32px 20px;
+      border-radius: $r-lg;
+      border-bottom: 1px solid $hair;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        background: $surface;
+        border-bottom-color: transparent;
+        box-shadow: inset 0 1px 0 $edge, $sh-md;
+        .contrib__go { transform: translateX(5px); color: $acc; }
+        .contrib__title { color: $acc; }
+      }
+    }
+
+    &:last-child a { border-bottom: 0; }
+  }
+
+  &__kind {
+    font-family: $mono; font-size: 0.72rem;
+    color: $ink-mute;
+  }
+
+  &__body { display: block; }
+
+  &__title {
+    display: block;
+    font-family: $mono; font-size: 0.95rem; font-weight: 500;
+    color: #fff;
+    margin-bottom: 7px;
+    transition: color 0.2s ease;
+  }
+
+  &__desc { display: block; color: $ink-dim; font-size: 0.9rem; }
+
+  &__go {
+    font-family: $mono;
+    color: $ink-mute;
+    text-align: right;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+}
+
+// ── Closing CTA ─────────────────────────────────────────────
+.cta {
+  padding: 180px 0 200px;
+
+  &__inner { text-align: center; }
+
+  &__title {
+    font-family: $mono;
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  &__desc {
+    font-family: $mono; font-size: 0.85rem;
+    color: $ink-mute;
+    margin-bottom: 40px;
+  }
+
+  .hero__actions { justify-content: center; align-items: center; }
+
+  &__star {
+    display: inline-flex; align-items: center;
+    img { display: block; height: 20px; width: auto; }
+  }
+}
+
+// ── Footer ──────────────────────────────────────────────────
+.footer {
+  border-top: 1px solid $hair;
+  padding: 44px 0;
+
+  &__inner {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap;
+  }
+
+  &__brand {
+    font-family: $mono; font-size: 0.88rem; font-weight: 600;
+    color: $ink;
+  }
+
+  &__copy { font-family: $mono; font-size: 0.72rem; color: $ink-mute; }
+
+  &__links {
+    display: flex; gap: 26px;
+    font-family: $mono; font-size: 0.75rem;
+
+    a {
+      color: $ink-mute;
+      transition: color 0.18s ease;
+      &:hover { color: $acc; }
+    }
+  }
+}
+
+// ── Responsive ──────────────────────────────────────────────
+@media (max-width: 920px) {
+  .section { padding: 116px 0; }
+  .sec-head { margin-bottom: 60px; }
+
+  .hero {
+    padding: 80px 0 110px;
+    &__inner { grid-template-columns: minmax(0, 1fr); gap: 60px; }
+    &__lede, &__title { max-width: none; }
+  }
+
+  .win__body { height: clamp(420px, 58vh, 520px); }
+
+  .privacy { grid-template-columns: minmax(0, 1fr); gap: 56px; }
+
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+
+  .who { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
+
+  .cta { padding: 124px 0 140px; }
+
+  .nav__links {
+    flex: 1;
+    gap: 22px;
+    margin: 0 22px;
+    font-size: 0.75rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    li { flex: none; }
+  }
+}
+
+@media (max-width: 640px) {
+  .wrap { padding: 0 22px; }
+  .section { padding: 92px 0; }
+  .cta { padding: 100px 0 112px; }
+  .sec-head { margin-bottom: 48px; }
+
+  .spec__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 26px 14px;
+  }
+  .spec__tag { text-align: left; }
+
+  .contrib__item a {
+    grid-template-columns: minmax(0, 1fr) 20px;
+    gap: 16px;
+    padding: 26px 14px;
+  }
+  .contrib__kind { grid-column: 1 / -1; }
+
+  .who { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+
+  .footer__inner { flex-direction: column; align-items: flex-start; }
+
+  .btn { flex: 1 1 auto; justify-content: center; }
+
+  .nav__links { margin: 0 14px; gap: 17px; }
+}
+
+// ── Motion preferences ──────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .btn:hover, .step:hover { transform: none; }
+}
+
+// ── Documentation search ────────────────────────────────────
+.search {
+  position: relative;
+  max-width: 520px;
+  margin-bottom: 64px;
+
+  // when a note follows directly, the search's own gap is enough
+  + .note { margin-top: 0; }
+
+  &__field {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 18px;
+    height: 52px;
+    @include raised($sh-sm);
+    border-radius: $r;
+    transition: box-shadow 0.18s ease, background 0.18s ease;
+
+    svg {
+      width: 15px; height: 15px; flex: none;
+      fill: none; stroke: $ink-mute; stroke-width: 1.5;
+      stroke-linecap: round;
+      transition: stroke 0.18s ease;
+    }
+
+    &:focus-within {
+      background: $surface-2;
+      box-shadow: inset 0 1px 0 $edge, $sh-md, 0 0 0 1px $hair-lit;
+      svg { stroke: $ink; }
+    }
+  }
+
+  input {
+    flex: 1;
+    background: none; border: 0; outline: none;
+    font-family: $mono; font-size: 0.85rem;
+    color: $ink;
+    &::placeholder { color: $ink-mute; }
+    &::-webkit-search-cancel-button { -webkit-appearance: none; }
+  }
+
+  &__results {
+    position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+    z-index: 50;
+    padding: 6px;
+    @include raised($sh-lg);
+    border-radius: $r;
+    max-height: 340px;
+    overflow-y: auto;
+
+    &[hidden] { display: none; }
+  }
+
+  &__hit {
+    display: block;
+    padding: 12px 14px;
+    border-radius: $r - 1;
+    transition: background 0.15s ease;
+
+    &:hover { background: $surface-2; }
+  }
+
+  &__hit-title {
+    display: block;
+    font-family: $mono; font-size: 0.85rem; font-weight: 500;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  &__hit-text {
+    display: block;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: $ink-mute;
+  }
+
+  &__empty {
+    padding: 14px;
+    font-family: $mono; font-size: 0.8rem;
+    color: $ink-mute;
+  }
+}
+
+// ── Features / roadmap ──────────────────────────────────────
+.feat {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px 80px;
+
+  &__label {
+    font-family: $mono; font-size: 0.7rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: $ink-mute;
+    padding-bottom: 18px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid $hair;
+  }
+
+  &__list {
+    display: grid;
+    gap: 15px;
+
+    li {
+      position: relative;
+      padding-left: 28px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: $ink;
+
+      &::before {
+        content: '\2713';
+        position: absolute; left: 0; top: 0;
+        font-family: $mono; font-size: 0.85rem;
+        color: $acc;
+      }
+    }
+
+    // planned work reads one step back from what ships today
+    &--planned li {
+      color: $ink-dim;
+      &::before { content: '+'; color: $ink-mute; }
+    }
+  }
+}
+
+// ── Documentation pages ─────────────────────────────────────
+.wrap--doc { max-width: 760px; }
+
+.doc {
+  &__crumb {
+    font-family: $mono; font-size: 0.75rem;
+    color: $ink-mute;
+    margin-bottom: 26px;
+
+    a { color: $ink-dim; &:hover { color: $acc; } }
+    span { padding: 0 6px; }
+  }
+
+  &__title {
+    font-family: $mono;
+    font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    color: #fff;
+    margin-bottom: 32px;
+  }
+
+  &__meta {
+    display: flex; flex-wrap: wrap; gap: 10px 48px;
+    padding: 20px 24px;
+    margin-bottom: 44px;
+    @include raised($sh-sm);
+    border-radius: $r;
+
+    dt {
+      font-family: $mono; font-size: 0.68rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: $ink-mute;
+      margin-bottom: 6px;
+    }
+
+    dd {
+      font-family: $mono; font-size: 0.85rem;
+      color: $ink;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__body {
+    color: $ink-dim;
+    font-size: 0.98rem;
+    line-height: 1.8;
+
+    h2 {
+      font-family: $mono; font-size: 1.05rem; font-weight: 500;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin: 48px 0 16px;
+    }
+
+    p { margin-bottom: 20px; }
+
+    strong { color: $ink; font-weight: 500; }
+    em { color: $ink; font-style: normal; }
+
+    a {
+      color: $acc;
+      border-bottom: 1px solid $hair-lit;
+      &:hover { border-color: $acc; }
+    }
+
+    ul { display: grid; gap: 12px; margin-bottom: 20px; }
+    li { position: relative; padding-left: 22px;
+      &::before { content: '\2013'; position: absolute; left: 0; color: $ink-mute; } }
+
+    pre {
+      @include raised($sh-sm);
+      border-radius: $r;
+      padding: 16px 18px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+
+      code { font-size: 0.82rem; line-height: 1.7; color: $ink; }
+    }
+  }
+}
+
+@media (max-width: 920px) {
+  .feat { grid-template-columns: minmax(0, 1fr); gap: 52px; }
+  .search { margin-bottom: 48px; }
+}
+
+@media (max-width: 640px) {
+  .checks--split { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .doc__meta { gap: 18px 32px; }
+}

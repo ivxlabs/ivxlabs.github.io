@@ -1,0 +1,59 @@
+<script src="{{ get_url(path='elasticlunr.min.js') }}"></script>
+<script src="{{ get_url(path='search_index.en.js') }}"></script>
+<script>
+  (function () {
+    var box = document.getElementById('docsearch');
+    var list = document.getElementById('docsearch-results');
+    if (!box || !list || !window.elasticlunr || !window.searchIndex) return;
+
+    var index = elasticlunr.Index.load(window.searchIndex);
+    var current = [];
+
+    function snippet(body, term) {
+      var at = body.toLowerCase().indexOf(term.toLowerCase());
+      var from = at < 0 ? 0 : Math.max(0, at - 40);
+      return (from > 0 ? '…' : '') + body.slice(from, from + 150).trim() + '…';
+    }
+
+    function render(hits, term) {
+      list.innerHTML = '';
+      current = hits;
+      if (!hits.length) {
+        list.innerHTML = '<li class="search__empty">No documentation matches that.</li>';
+        list.hidden = false;
+        return;
+      }
+      hits.forEach(function (hit) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = hit.ref;
+        a.className = 'search__hit';
+        a.innerHTML = '<span class="search__hit-title"></span><span class="search__hit-text"></span>';
+        a.querySelector('.search__hit-title').textContent = hit.doc.title;
+        a.querySelector('.search__hit-text').textContent = snippet(hit.doc.body || '', term);
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+      list.hidden = false;
+    }
+
+    box.addEventListener('input', function () {
+      var term = box.value.trim();
+      if (term.length < 2) { list.hidden = true; list.innerHTML = ''; current = []; return; }
+      render(index.search(term, {
+        bool: 'OR',
+        expand: true,
+        fields: { title: { boost: 4 }, body: { boost: 1 } }
+      }).slice(0, 6), term);
+    });
+
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && current.length) { window.location.href = current[0].ref; }
+      if (e.key === 'Escape') { box.value = ''; list.hidden = true; box.blur(); }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!list.contains(e.target) && e.target !== box) list.hidden = true;
+    });
+  })();
+</script>

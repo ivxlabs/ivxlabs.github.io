@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation — ivx/ai Chat{% endblock %}
+
+{% block body %}
+<a class="skip" href="#main">Skip to content</a>
+{% include "partials/nav.html" %}
+
+<main id="main" class="section">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label"><span>docs</span>ivx/ai Chat</p>
+      <h1 class="sec-title">Documentation</h1>
+    </div>
+
+    <div class="search">
+      <label class="search__field">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input type="search" id="docsearch" placeholder="Search the documentation" autocomplete="off" spellcheck="false">
+      </label>
+      <ul class="search__results" id="docsearch-results" hidden></ul>
+    </div>
+
+    <dl class="spec">
+      {% for page in section.pages %}
+      <div class="spec__row">
+        <dt class="spec__key"><a href="{{ page.permalink }}">{{ page.title }}</a></dt>
+        <dd class="spec__desc">{{ page.description | default(value="") }}</dd>
+        <dd class="spec__tag">{{ page.extra.key | default(value="") }}</dd>
+      </div>
+      {% endfor %}
+    </dl>
+  </div>
+</main>
+
+{% include "partials/footer.html" %}
+{% include "partials/search.html" %}
+{% endblock %}

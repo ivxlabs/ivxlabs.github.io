@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — ivx/ai Chat documentation{% endblock %}
+
+{% block body %}
+<a class="skip" href="#main">Skip to content</a>
+{% include "partials/nav.html" %}
+
+<main id="main" class="section">
+  <div class="wrap wrap--doc">
+    <p class="doc__crumb"><a href="/docs/">documentation</a> <span aria-hidden="true">/</span> {{ page.title }}</p>
+    <h1 class="doc__title">{{ page.title }}</h1>
+
+    {% if page.extra.base_url %}
+    <dl class="doc__meta">
+      <div><dt>base URL</dt><dd>{{ page.extra.base_url }}</dd></div>
+      <div><dt>key</dt><dd>{{ page.extra.key }}</dd></div>
+    </dl>
+    {% endif %}
+
+    <div class="doc__body">
+      {{ page.content | safe }}
+    </div>
+
+    <a href="/docs/" class="link-arrow">all documentation <span aria-hidden="true">&rarr;</span></a>
+  </div>
+</main>
+
+{% include "partials/footer.html" %}
+{% endblock %}
