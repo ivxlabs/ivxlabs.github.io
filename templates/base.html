@@ -1,12 +1,55 @@
 <!DOCTYPE html>
+{#- Social metadata. Sections and pages expose different variables, so resolve
+    the three values once here rather than repeating them per template. -#}
+{%- set_global og_title = config.title -%}
+{%- set_global og_description = config.description -%}
+{%- set_global og_url = config.base_url -%}
+{%- if page is defined -%}
+  {%- set_global og_title = page.title ~ " — ivx/ai Chat" -%}
+  {%- set_global og_description = page.description | default(value=config.description) -%}
+  {%- set_global og_url = page.permalink -%}
+{%- elif section is defined -%}
+  {%- if section.title -%}
+    {#- the home section already carries the brand; sub-sections do not -#}
+    {%- if "ivx/ai" in section.title -%}
+      {%- set_global og_title = section.title -%}
+    {%- else -%}
+      {%- set_global og_title = section.title ~ " — ivx/ai Chat" -%}
+    {%- endif -%}
+  {%- endif -%}
+  {%- set_global og_description = section.description | default(value=config.description) -%}
+  {%- set_global og_url = section.permalink -%}
+{%- endif -%}
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>{% block title %}{{ config.title }}{% endblock %}</title>
-  <meta name="description" content="{{ config.description | default(value='') }}">
+  <meta name="description" content="{{ og_description }}">
   <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#0b0d0e">
+  <meta name="theme-color" content="#0a0c0d">
+  <link rel="canonical" href="{{ og_url }}">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ivx/ai Chat">
+  <meta property="og:title" content="{{ og_title }}">
+  <meta property="og:description" content="{{ og_description }}">
+  <meta property="og:url" content="{{ og_url }}">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:image" content="{{ get_url(path='og.png') }}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ivx/ai Chat — a chat client that runs entirely in your browser. No backend. No accounts. No analytics. No telemetry.">
+
+  <!-- X / Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ og_title }}">
+  <meta name="twitter:description" content="{{ og_description }}">
+  <meta name="twitter:image" content="{{ get_url(path='og.png') }}">
+
   <link rel="icon" type="image/svg+xml" href="{{ get_url(path='favicon.svg') }}">
   <link rel="stylesheet" href="{{ get_url(path='style.css') }}">
   {% block head %}{% endblock %}
