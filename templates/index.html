@@ -22,7 +22,9 @@
       </p>
 
       <div class="cmd">
-        <code class="cmd__text" id="install-cmd"><span class="cmd__sigil">$</span>brew install --cask ivxai-chat</code>
+        <code class="cmd__text" id="install-cmd"><span class="cmd__sigil">$</span> brew tap ivxlabs/tap<br>
+<span class="cmd__sigil">$</span> brew trust ivxlabs/tap<br>
+<span class="cmd__sigil">$</span> brew install --cask ivxai-chat</code>
         <button class="cmd__copy" type="button" data-copy="install-cmd" aria-label="Copy install command">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 1H2a1 1 0 00-1 1v9h1.5V2.5H10V1z"/><path d="M14 4H5a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V5a1 1 0 00-1-1zm-.5 9.5h-8v-8h8v8z"/></svg>
           <span class="cmd__copy-label">copy</span>
@@ -31,7 +33,7 @@
 
       <div class="hero__actions">
         <a href="/chat" class="btn btn--solid">Try it</a>
-        <a href="https://github.com/ivxlabs/ivxai-app" class="btn btn--ghost">Desktop app</a>
+        <a href="https://github.com/ivxlabs/ivxai-app/releases/latest" class="btn btn--ghost">Download</a>
       </div>
     </div>
 
@@ -62,6 +64,62 @@
   </div>
 </header>
 
+<section class="platforms" aria-label="Supported platforms and browsers">
+  <div class="wrap">
+    <p class="platforms__label">runs on</p>
+    <ul class="platforms__grid">
+      <li class="platforms__item">
+        <a class="platforms__link" href="/docs/install/#firefox">
+          <img class="platforms__logo" src="/logos/firefox.svg" alt="" loading="lazy">
+          <span class="platforms__text"><span class="platforms__name">Firefox</span><span class="platforms__status">web app, extension soon</span></span>
+        </a>
+      </li>
+      <li class="platforms__item">
+        <a class="platforms__link" href="/docs/install/#chrome">
+          <img class="platforms__logo" src="/logos/chrome.svg" alt="" loading="lazy">
+          <span class="platforms__text"><span class="platforms__name">Chrome</span><span class="platforms__status">web app, extension soon</span></span>
+        </a>
+      </li>
+      <li class="platforms__item">
+        <a class="platforms__link" href="/docs/install/#safari">
+          <img class="platforms__logo" src="/logos/safari.svg" alt="" loading="lazy">
+          <span class="platforms__text"><span class="platforms__name">Safari</span><span class="platforms__status">web app</span></span>
+        </a>
+      </li>
+      <li class="platforms__item">
+        <a class="platforms__link" href="/docs/install/#linux">
+          <img class="platforms__logo" src="/logos/tux.svg" alt="" loading="lazy">
+          <span class="platforms__text"><span class="platforms__name">Linux</span><span class="platforms__status">Debian package available</span></span>
+        </a>
+      </li>
+      <li class="platforms__item">
+        <a class="platforms__link" href="/docs/install/#windows">
+          <img class="platforms__logo" src="/logos/windows.svg" alt="" loading="lazy">
+          <span class="platforms__text"><span class="platforms__name">Windows</span><span class="platforms__status">installer available</span></span>
+        </a>
+      </li>
+      <li class="platforms__item">
+        <a class="platforms__link" href="/docs/install/#macos">
+          <img class="platforms__logo" src="/logos/apple.svg" alt="" loading="lazy">
+          <span class="platforms__text"><span class="platforms__name">macOS</span><span class="platforms__status">available via brew</span></span>
+        </a>
+      </li>
+      <li class="platforms__item">
+        <a class="platforms__link" href="/docs/install/#android">
+          <img class="platforms__logo" src="/logos/android.svg" alt="" loading="lazy">
+          <span class="platforms__text"><span class="platforms__name">Android</span><span class="platforms__status">build from source</span></span>
+        </a>
+      </li>
+      <li class="platforms__item">
+        <a class="platforms__link" href="/docs/install/#ios">
+          <img class="platforms__logo" src="/logos/apple.svg" alt="" loading="lazy">
+          <span class="platforms__text"><span class="platforms__name">iOS</span><span class="platforms__status">build from source</span></span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+
 <section class="section" id="privacy">
   <div class="wrap">
     <div class="sec-head">
@@ -71,32 +129,23 @@
 
     <ul class="checks checks--split">
       <li>
-        <b>No third-party code at runtime.</b> Halfmoon CSS and IBM Plex are
-        bundled and served from your own origin. No CDNs, no Google Fonts, no
-        trackers, no analytics, no telemetry.
+        <b>No telemetry.</b> Nothing phones home, not even an error report.
       </li>
       <li>
-        <b>A Content-Security-Policy that enforces it.</b>
-        <code>script-src 'self'</code> — the page cannot execute code from
-        anywhere else, even if something tried.
+        <b>No training.</b> Nothing is used to improve any model.<sup>*</sup>
       </li>
       <li>
-        <b>Only the requests you asked for.</b> Chat completions and model lists,
-        to the base URL you configured. Check it in the Network panel.
+        <b>Easy to install.</b> One command on macOS, installers for Windows
+        and Linux.
       </li>
       <li>
-        <b>Your data stays put.</b> Conversations and messages live in IndexedDB.
-        Keys live there too, optionally encrypted with a passphrase you choose.
+        <b>Encryption supported.</b> API keys can sit encrypted under your own
+        passphrase.
       </li>
     </ul>
 
     <p class="note">
-      By default keys sit in IndexedDB in the clear, like every other web app's
-      data. <b>Settings → Privacy &amp; data → Encrypt API keys</b> wraps them in
-      AES-GCM under a key derived from your passphrase (PBKDF2-SHA256,
-      310&nbsp;000 iterations), held in memory only — so you unlock once per
-      session and can re-lock from the sidebar. There is no recovery path: lose
-      the passphrase, lose the keys.
+      * you bring your own AI models, so there is nothing of ours to train on.
     </p>
   </div>
 </section>
@@ -117,9 +166,9 @@
     </div>
 
     <p class="note">
-      Point <em>Custom OpenAI-compatible</em> at anything else speaking the
-      OpenAI chat API. Some APIs refuse calls made from a browser; the desktop
-      app carries a small proxy that gets around it, with nothing to configure.
+      If you believe any provider is missing, <a
+      href="https://github.com/ivxlabs/chat/issues">create an issue</a> in the
+      GitHub repo.
     </p>
   </div>
 </section>
@@ -138,20 +187,21 @@
           <li>Support for multiple providers</li>
           <li>Easy to use</li>
           <li>Clean UI</li>
-          <li>Cross platform, with apps for most major operating systems</li>
+          <li>Native apps for macOS, Windows and Linux</li>
           <li>Lightweight, and usable directly over a browser</li>
+          <li>WebLLM inference, via MLC</li>
+          <li>Share chats anonymously</li>
         </ul>
       </div>
       <div class="feat__col">
         <p class="feat__label">planned</p>
         <ul class="feat__list feat__list--planned">
           <li>Sync with multiple cloud services</li>
-          <li>Share chats anonymously</li>
           <li>MCP support</li>
           <li>Tools</li>
           <li>A store for connectors and skills</li>
           <li>Chat organization</li>
-          <li>WebLLM inference, via MLC</li>
+          <li>Chrome and Firefox extensions</li>
         </ul>
       </div>
     </div>
@@ -171,20 +221,22 @@
         <h3 class="step__title">In the browser</h3>
         <p class="step__desc">Choose <em>Install</em> / <em>Add to Home Screen</em> to keep it as an app; after the first load it works offline.</p>
         <pre class="step__code"><code>ai.ivx.run/chat</code></pre>
+        <p class="step__foot">Some providers refuse calls made from a browser, so the web version goes through the bridge: <code>brew install ivx-bridge</code>. Not on macOS? Download it from <a href="https://github.com/ivxlabs/ivxai-app/releases/latest">Releases</a>.</p>
       </article>
       <article class="step">
         <p class="step__n">02</p>
         <h3 class="step__title">The desktop app</h3>
         <p class="step__desc">The same UI in a native window, with the same bridge running inside it. Nothing to configure.</p>
         <pre class="step__code"><code><span class="o-sigil">$</span> brew tap ivxlabs/tap
-<span class="o-sigil">$</span> brew install \
-    --cask ivxai-chat</code></pre>
+<span class="o-sigil">$</span> brew trust ivxlabs/tap
+<span class="o-sigil">$</span> brew install --cask ivxai-chat</code></pre>
       </article>
       <article class="step">
         <p class="step__n">03</p>
         <h3 class="step__title">From source</h3>
-        <p class="step__desc"><code>dist/</code> is plain static files with a relative base, so it drops into any host or subdirectory.</p>
-        <pre class="step__code"><code><span class="o-sigil">$</span> npm install
+        <p class="step__desc">The desktop app and the bridge. You need Rust, Node and the Tauri prerequisites; the web UI arrives as a submodule.</p>
+        <pre class="step__code"><code><span class="o-sigil">$</span> git clone --recurse-submodules https://github.com/ivxlabs/ivxai-app
+<span class="o-sigil">$</span> cd ivxai-app &amp;&amp; npm install
 <span class="o-sigil">$</span> npm run build</code></pre>
       </article>
     </div>
@@ -238,16 +290,12 @@
   <div class="wrap cta__inner">
     <h2 class="cta__title">No ads, no telemetry, no paid tier.</h2>
     <p class="cta__desc">
-      ivx/ai Chat is part of ivx research's effort to strip trackers and
-      advertising out of privacy-critical infrastructure, and to make
-      open-weight models a practical default.
+      Contributions are welcome, from code to docs to bug reports. Questions
+      and discussion happen on Discord.
     </p>
     <div class="hero__actions">
       <a href="/chat" class="btn btn--solid">Try it</a>
-      <a class="cta__star" href="https://github.com/ivxlabs/ivxai-app">
-        <img src="https://img.shields.io/github/stars/ivxlabs/ivxai-app?style=social"
-             alt="Stars on GitHub" height="20">
-      </a>
+      <a href="https://discord.gg/sRksdur4jw" class="btn btn--ghost">Join the Discord</a>
     </div>
   </div>
 </section>
@@ -261,7 +309,11 @@
     btn.addEventListener('click', function () {
       var src = document.getElementById(btn.dataset.copy);
       if (!src || !navigator.clipboard) return;
-      var text = src.textContent.replace(/^\s*\$\s*/, '');
+      var clean = src.cloneNode(true);
+      clean.querySelectorAll('.cmd__sigil').forEach(function (n) { n.remove(); });
+      var text = clean.textContent
+        .split('\n').map(function (line) { return line.trim(); })
+        .filter(Boolean).join('\n');
       navigator.clipboard.writeText(text).then(function () {
         var label = btn.querySelector('.cmd__copy-label');
         var prev = label.textContent;

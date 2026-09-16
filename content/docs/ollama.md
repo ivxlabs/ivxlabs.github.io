@@ -1,10 +1,10 @@
 +++
 title = "Ollama"
-description = "Run open-weight models on your own machine and point ivx/ai Chat at them."
+description = "Run open-weight models on your own machine or on Ollama Cloud, and point ivx/ai Chat at them."
 weight = 1
 [extra]
-base_url = "http://localhost:11434"
-key = "not needed"
+base_url = "http://localhost:11434 / https://ollama.com"
+key = "not needed / required for Cloud"
 +++
 
 Ollama runs open-weight models on your own machine. It is seeded in ivx/ai Chat,
@@ -17,6 +17,17 @@ http://localhost:11434
 ```
 
 No API key is needed.
+
+## Ollama Cloud
+
+Ollama also offers a paid subscription, Ollama Cloud, which runs models on
+their servers. Point a provider at:
+
+```
+https://ollama.com
+```
+
+It requires an API key from your Ollama account.
 
 ## Allowing browser requests
 

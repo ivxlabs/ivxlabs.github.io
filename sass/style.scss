@@ -131,6 +131,12 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
   b { color: $ink-dim; font-weight: 500; }
   em { color: $ink-dim; font-style: normal; }
+  a {
+    color: $ink;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    &:hover { color: #fff; }
+  }
   + .note { margin-top: 18px; }
 }
 
@@ -209,6 +215,10 @@ code {
     color: #fff; letter-spacing: -0.02em;
   }
 
+  &__brand-wrap {
+    display: flex; align-items: center; gap: 14px;
+  }
+
   &__slash { color: $acc; }
 
   &__links {
@@ -228,11 +238,17 @@ code {
     display: inline-flex; align-items: center;
     img { display: block; height: 20px; width: auto; }
   }
+
+  &__actions {
+    display: flex; align-items: center; gap: 10px;
+
+    .btn { padding: 9px 16px; font-size: 0.78rem; }
+  }
 }
 
 // ── Hero ────────────────────────────────────────────────────
 .hero {
-  padding: 112px 0 168px;
+  padding: 112px 0 96px;
 
   &__inner {
     display: grid;
@@ -288,10 +304,11 @@ code {
 
   &__text {
     flex: 1 1 auto;
-    display: flex; align-items: center; gap: 11px;
+    display: block;
     font-family: $mono; font-size: 0.82rem;
+    line-height: 2.05;
     color: $ink;
-    padding: 15px 18px;
+    padding: 13px 18px;
     overflow-x: auto;
     white-space: nowrap;
   }
@@ -308,6 +325,63 @@ code {
     svg { width: 13px; height: 13px; fill: currentColor; }
     &:hover { color: $ink; background: $surface-2; }
     &.is-copied { color: $acc; }
+  }
+}
+
+// ── Platforms strip ─────────────────────────────────────
+.platforms {
+  padding: 0 0 56px;
+
+  &__label {
+    font-family: $mono; font-size: 0.7rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: $ink-mute;
+    margin-bottom: 22px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  &__item { min-width: 0; }
+
+  &__link {
+    @include raised($sh-sm);
+    height: 100%;
+    padding: 17px 18px;
+    display: flex; align-items: center; gap: 13px;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      background: $surface-2;
+      box-shadow: inset 0 1px 0 $edge, $sh-md;
+    }
+  }
+
+  &__logo {
+    width: 34px; height: 34px; flex: none;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: $r;
+    object-fit: contain;
+  }
+
+  &__text { min-width: 0; }
+
+  &__name {
+    display: block;
+    font-family: $mono; font-size: 0.85rem; font-weight: 500;
+    color: #fff; letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  &__status {
+    display: block;
+    font-family: $mono; font-size: 0.67rem;
+    color: $ink-mute;
+    line-height: 1.6;
   }
 }
 
@@ -522,6 +596,21 @@ $adw-line:   rgba(255, 255, 255, 0.09);
     overflow-x: auto;
     white-space: pre;
   }
+
+  &__foot {
+    font-size: 0.8rem;
+    color: $ink-mute;
+    line-height: 1.7;
+    margin-top: 14px;
+
+    code { color: $ink-dim; }
+    a {
+      color: $ink-dim;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      &:hover { color: $ink; }
+    }
+  }
 }
 
 // ── Who it's for ────────────────────────────────────────────
@@ -653,7 +742,7 @@ $adw-line:   rgba(255, 255, 255, 0.09);
   .sec-head { margin-bottom: 60px; }
 
   .hero {
-    padding: 80px 0 110px;
+    padding: 80px 0 70px;
     &__inner { grid-template-columns: minmax(0, 1fr); gap: 60px; }
     &__lede, &__title { max-width: none; }
   }
@@ -661,6 +750,8 @@ $adw-line:   rgba(255, 255, 255, 0.09);
   .win__body { height: clamp(420px, 58vh, 520px); }
 
   .privacy { grid-template-columns: minmax(0, 1fr); gap: 56px; }
+
+  .platforms__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .steps { grid-template-columns: minmax(0, 1fr); gap: 20px; }
 
