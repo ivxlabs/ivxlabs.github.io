@@ -56,6 +56,17 @@ jobs:
           repository: ivxlabs/ivxai-app
           path: .app
 
+      # checkout does not fetch submodules, so if ivxai-app ever carries web/
+      # as one again, this checks out an empty directory and the next step
+      # fails on a cache path instead of saying so.
+      - name: Check the chat client came with it
+        run: |
+          if [ ! -f .app/web/package.json ]; then
+            echo "::error::.app/web is empty — ivxlabs/ivxai-app has no web/ at this ref."
+            echo "::error::If it is still a submodule there, the merge has not been pushed."
+            exit 1
+          fi
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
