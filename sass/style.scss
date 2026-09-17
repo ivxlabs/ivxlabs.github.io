@@ -25,6 +25,8 @@ $sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 
 $r:    6px;
 $r-lg: 10px;
 
+$nav-h: 72px;   // the sticky bar; the drawer and the scroll lock both key off it
+
 // Layered elevation — soft, wide, never a hard drop
 $sh-sm:
   0 1px 2px rgba(0, 0, 0, 0.5),
@@ -50,6 +52,9 @@ $sh-lg:
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 100px;
+  // reserve the scrollbar track so locking the page behind the nav drawer
+  // cannot shift the layout sideways; a no-op with overlay scrollbars
+  scrollbar-gutter: stable;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -207,7 +212,8 @@ code {
 
   &__inner {
     display: flex; align-items: center; justify-content: space-between;
-    height: 72px;
+    gap: 16px;
+    height: $nav-h;
   }
 
   &__brand {
@@ -216,16 +222,20 @@ code {
   }
 
   &__brand-wrap {
-    display: flex; align-items: center; gap: 14px;
+    display: flex; flex: none; align-items: center; gap: 14px;
   }
 
   &__slash { color: $acc; }
 
+  &__menu {
+    display: flex; flex: 1; align-items: center; justify-content: space-between;
+    gap: 24px;
+    min-width: 0;
+  }
+
   &__links {
     display: flex; gap: 34px;
     font-family: $mono; font-size: 0.8rem;
-    scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
 
     a {
       color: $ink-mute;
@@ -235,8 +245,8 @@ code {
   }
 
   &__star {
-    display: inline-flex; align-items: center;
-    img { display: block; height: 20px; width: auto; }
+    display: inline-flex; flex: none; align-items: center;
+    img { display: block; width: 76px; height: 20px; }
   }
 
   &__actions {
@@ -244,7 +254,44 @@ code {
 
     .btn { padding: 9px 16px; font-size: 0.78rem; }
   }
+
+  &__toggle {
+    display: none;
+    flex: none;
+    width: 44px; height: 44px;
+    flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+    background: transparent;
+    border: 1px solid $hair-lit;
+    border-radius: $r;
+    cursor: pointer;
+    transition: border-color 0.18s ease;
+
+    &:hover { border-color: rgba(255, 255, 255, 0.22); }
+  }
+
+  &__toggle-bar {
+    display: block; width: 18px; height: 1.5px;
+    background: $ink;
+    border-radius: 1px;
+    transition: transform 0.22s ease;
+  }
 }
+
+.nav.is-open .nav__toggle {
+  .nav__toggle-bar:first-child { transform: translateY(3.25px) rotate(45deg); }
+  .nav__toggle-bar:last-child { transform: translateY(-3.25px) rotate(-45deg); }
+}
+
+// while the drawer is open the page behind it must not scroll. overflow:hidden
+// on the scroller also removes the scrollport position:sticky needs, which
+// would drop the bar back to its static position at the top of the document —
+// so pin it explicitly, and give body back the 72px the bar gives up in flow
+// so the content behind the drawer does not jump.
+.is-nav-open, .is-nav-open body { overflow: hidden; }
+
+.is-nav-open body { padding-top: $nav-h; }
+
+.is-nav-open .nav { position: fixed; top: 0; left: 0; right: 0; }
 
 // ── Hero ────────────────────────────────────────────────────
 .hero {
@@ -734,6 +781,19 @@ $adw-line:   rgba(255, 255, 255, 0.09);
       &:hover { color: $acc; }
     }
   }
+
+  &__badge {
+    display: inline-flex;
+
+    img {
+      display: block;
+      width: 160px; height: auto;
+      opacity: 0.85;
+      transition: opacity 0.18s ease;
+    }
+
+    &:hover img { opacity: 1; }
+  }
 }
 
 // ── Responsive ──────────────────────────────────────────────
@@ -758,17 +818,6 @@ $adw-line:   rgba(255, 255, 255, 0.09);
   .who { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
 
   .cta { padding: 124px 0 140px; }
-
-  .nav__links {
-    flex: 1;
-    gap: 22px;
-    margin: 0 22px;
-    font-size: 0.75rem;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-    li { flex: none; }
-  }
 }
 
 @media (max-width: 640px) {
@@ -795,9 +844,66 @@ $adw-line:   rgba(255, 255, 255, 0.09);
 
   .footer__inner { flex-direction: column; align-items: flex-start; }
 
-  .btn { flex: 1 1 auto; justify-content: center; }
+  .hero__actions .btn { flex: 1 1 auto; justify-content: center; }
+}
 
-  .nav__links { margin: 0 14px; gap: 17px; }
+// ── Nav, mobile ─────────────────────────────────────────────
+// Breakpoint mirrored in the nav script in templates/base.html — keep in sync.
+@media (max-width: 880px) {
+  .nav__toggle { display: inline-flex; }
+
+  .nav__menu {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex: none;
+    flex-direction: column; align-items: stretch;
+    gap: 0;
+    padding: 4px 32px 24px;
+    max-height: calc(100vh - #{$nav-h});
+    max-height: calc(100dvh - #{$nav-h});
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: rgba($bg, 0.94);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-top: 1px solid $hair;
+    box-shadow: $sh-lg;
+
+    // visibility, not display: display cannot transition, and visibility:hidden
+    // still keeps the links out of the tab order and the a11y tree
+    visibility: hidden; opacity: 0; pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+  }
+
+  .nav.is-open .nav__menu {
+    visibility: visible; opacity: 1; pointer-events: auto;
+    transform: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s;
+  }
+
+  .nav__links {
+    flex: none;
+    flex-direction: column; align-items: stretch;
+    gap: 0; margin: 0;
+    font-size: 0.88rem;
+
+    li { border-bottom: 1px solid $hair; }
+
+    a { display: block; padding: 14px 2px; color: $ink-dim; }
+  }
+
+  .nav__actions {
+    margin-top: 20px;
+    gap: 12px;
+
+    .btn { flex: 1; justify-content: center; padding: 14px 18px; font-size: 0.82rem; }
+  }
+
+  // keep the drawer gutters aligned with .wrap, which drops to 22px at 640
+  @media (max-width: 640px) {
+    .nav__menu { padding-left: 22px; padding-right: 22px; }
+  }
 }
 
 // ── Motion preferences ──────────────────────────────────────
@@ -809,6 +915,7 @@ $adw-line:   rgba(255, 255, 255, 0.09);
     transition-duration: 0.01ms !important;
   }
   .btn:hover, .step:hover { transform: none; }
+  .nav__menu { transition: none !important; }
 }
 
 // ── Documentation search ────────────────────────────────────

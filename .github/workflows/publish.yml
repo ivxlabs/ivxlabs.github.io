@@ -40,6 +40,62 @@ jobs:
       - name: Build
         run: zola build
 
+      # The chat client is built here and served from /chat.
+      #
+      # It used to be its own Pages site, at ai.ivx.run/chat only because the
+      # repository happened to be named `chat` — project sites hang off the
+      # organisation domain under their own name. That made a URL the marketing
+      # site links to six times hostage to a repository name. Building it into
+      # this artifact instead puts the path in this repository's hands, and the
+      # site and the app deploy together or not at all.
+      #
+      # It survives the move because its vite config sets `base: './'`: the
+      # bundle uses relative paths and runs from any directory of any host.
+      - uses: actions/checkout@v4
+        with:
+          repository: ivxlabs/ivxai-app
+          path: .app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: .app/web/package-lock.json
+
+      - name: Build the chat client
+        working-directory: .app/web
+        run: |
+          npm ci
+          npm run build
+
+      # The service worker ships with placeholders that its vite config fills
+      # in after the bundle is written. If that plugin ever silently stops
+      # running, /chat would deploy an offline shell that caches nothing.
+      - name: Check the service worker was stamped
+        run: |
+          if grep -qE '__PRECACHE_MANIFEST__|__CACHE_VERSION__' .app/web/dist/sw.js; then
+            echo "::error::sw.js still contains build placeholders"
+            exit 1
+          fi
+
+      # The whole premise of the app is that nothing third-party loads at
+      # runtime. A stray CDN URL in the bundle would quietly break that.
+      - name: Check no third-party origin is referenced
+        run: |
+          if grep -rniE 'https?://(cdn[.-]|unpkg\.com|cdnjs\.|jsdelivr\.|fonts\.(googleapis|gstatic)\.com|.*\.cloudfront\.net)' \
+               .app/web/dist --include='*.js' --include='*.css' --include='*.html'; then
+            echo "::error::the build references a third-party origin"
+            exit 1
+          fi
+          echo "No CDN references found"
+
+      - name: Place it at /chat
+        run: |
+          mkdir -p public/chat
+          cp -R .app/web/dist/. public/chat/
+          rm -rf .app
+          test -f public/chat/index.html
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3

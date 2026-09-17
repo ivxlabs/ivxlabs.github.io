@@ -56,5 +56,75 @@
 </head>
 <body>
   {% block body %}{% endblock %}
+
+  <script>
+    (function () {
+      var nav = document.querySelector('.nav');
+      var toggle = nav && nav.querySelector('.nav__toggle');
+      var menu = nav && nav.querySelector('.nav__menu');
+      if (!nav || !toggle || !menu) return;
+
+      var root = document.documentElement;
+      // mirrors the nav breakpoint in sass/style.scss — keep in sync
+      var mq = window.matchMedia('(max-width: 880px)');
+
+      function items() { return menu.querySelectorAll('a[href], button:not([disabled])'); }
+      function isOpen() { return nav.classList.contains('is-open'); }
+
+      // preventScroll is essential: the bar is sticky, so every target here sits
+      // at the top of the document in flow, and a plain focus() scrolls there
+      function setFocus(el) { if (el) el.focus({ preventScroll: true }); }
+
+      function open() {
+        nav.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        root.classList.add('is-nav-open');
+        setFocus(items()[0]);
+      }
+
+      // returnFocus only when the user dismissed the drawer itself; following a
+      // link must leave focus on the destination, not yank it back to the bar
+      function close(returnFocus) {
+        if (!isOpen()) return;
+        nav.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        root.classList.remove('is-nav-open');
+        if (returnFocus) setFocus(toggle);
+      }
+
+      toggle.addEventListener('click', function () {
+        if (isOpen()) close(true); else open();
+      });
+
+      menu.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('a')) close(false);
+      });
+
+      document.addEventListener('click', function (e) {
+        if (isOpen() && !nav.contains(e.target)) close(false);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (!isOpen()) return;
+        if (e.key === 'Escape') { e.preventDefault(); close(true); return; }
+        if (e.key !== 'Tab') return;
+
+        // trap: the toggle plus everything in the drawer, as one ring
+        var ring = [toggle].concat(Array.prototype.slice.call(items()));
+        var i = ring.indexOf(document.activeElement);
+        if (i === -1) return;
+
+        e.preventDefault();
+        setFocus(ring[e.shiftKey ? (i === 0 ? ring.length - 1 : i - 1)
+                                 : (i === ring.length - 1 ? 0 : i + 1)]);
+      });
+
+      // widening past the breakpoint turns the drawer back into a plain row —
+      // drop is-open and aria-expanded so neither goes stale
+      function onBreakpoint() { if (!mq.matches) close(false); }
+      if (mq.addEventListener) mq.addEventListener('change', onBreakpoint);
+      else mq.addListener(onBreakpoint);
+    })();
+  </script>
 </body>
 </html>

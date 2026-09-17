@@ -1,22 +1,28 @@
-<nav class="nav">
+<nav class="nav" aria-label="Main">
   <div class="wrap nav__inner">
     <div class="nav__brand-wrap">
       <a href="/" class="nav__brand">ivx<span class="nav__slash">/</span>ai</a>
       <a class="nav__star" href="https://github.com/ivxlabs/ivxai-app">
-        <img src="https://img.shields.io/github/stars/ivxlabs/ivxai-app?style=social"
-             alt="Stars on GitHub" height="20">
+        <img src="{{ get_url(path='badges/github-stars.svg') }}"
+             alt="Stars on GitHub" width="76" height="20">
       </a>
     </div>
-    <ul class="nav__links">
-      <li><a href="/#privacy">privacy</a></li>
-      <li><a href="/#providers">providers</a></li>
-      <li><a href="/#features">features</a></li>
-      <li><a href="/#install">install</a></li>
-      <li><a href="/docs/">docs</a></li>
-    </ul>
-    <div class="nav__actions">
-      <a href="https://github.com/ivxlabs/ivxai-app/releases/latest" class="btn btn--ghost">Download</a>
-      <a href="/chat" class="btn btn--solid">Try Now</a>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Menu">
+      <span class="nav__toggle-bar" aria-hidden="true"></span>
+      <span class="nav__toggle-bar" aria-hidden="true"></span>
+    </button>
+    <div class="nav__menu" id="nav-menu">
+      <ul class="nav__links">
+        <li><a href="/#privacy">privacy</a></li>
+        <li><a href="/#providers">providers</a></li>
+        <li><a href="/#features">features</a></li>
+        <li><a href="/#install">install</a></li>
+        <li><a href="/docs/">docs</a></li>
+      </ul>
+      <div class="nav__actions">
+        <a href="https://github.com/ivxlabs/ivxai-app/releases/latest" class="btn btn--ghost">Download</a>
+        <a href="/chat" class="btn btn--solid">Try Now</a>
+      </div>
     </div>
   </div>
 </nav>
