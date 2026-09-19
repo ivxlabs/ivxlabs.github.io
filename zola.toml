@@ -2,7 +2,7 @@
 base_url = "https://ai.ivx.run"
 
 title = "ivx/ai Chat"
-description = "A chat client that runs entirely in your browser. No backend, no accounts, no analytics, no telemetry."
+description = "A lightweight, browser-based chat client designed for users who want total control over their data and their AI interactions."
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true

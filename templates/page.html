@@ -1,0 +1,22 @@
+{# A standalone page — no section, no breadcrumb, no "back to docs" trail.
+   Shares the doc body styling, because a page of prose is a page of prose. #}
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — ivx/ai Chat{% endblock %}
+
+{% block body %}
+<a class="skip" href="#main">Skip to content</a>
+{% include "partials/nav.html" %}
+
+<main id="main" class="section">
+  <div class="wrap wrap--doc">
+    <h1 class="doc__title">{{ page.title }}</h1>
+
+    <div class="doc__body">
+      {{ page.content | safe }}
+    </div>
+  </div>
+</main>
+
+{% include "partials/footer.html" %}
+{% endblock %}
