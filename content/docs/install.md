@@ -85,13 +85,17 @@ npm run ios
 
 ## Chrome
 
-The extension is coming soon. The web version already runs in Chrome: open
+Install the extension from the
+[Chrome Web Store](https://chromewebstore.google.com/detail/ivxai-chat/hagajeejempjjekliknlahninodaejmb).
+The web version also runs in Chrome: open
 [ai.ivx.run/chat](https://ai.ivx.run/chat) and choose *Install* to keep it as
 an app; after the first load it works offline.
 
 ## Firefox
 
-The extension is coming soon. The web version already runs in Firefox: open
+Install the extension from
+[addons.mozilla.org](https://addons.mozilla.org/en-GB/firefox/addon/ivx-ai-chat/).
+The web version also runs in Firefox: open
 [ai.ivx.run/chat](https://ai.ivx.run/chat).
 
 ## Safari

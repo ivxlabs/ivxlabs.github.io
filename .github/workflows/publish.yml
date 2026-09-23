@@ -30,6 +30,14 @@ jobs:
             | sudo tar -xz -C /usr/local/bin zola
           zola --version
 
+      # The badges in the nav and the footer are vendored SVGs, so no visitor
+      # ever asks shields.io or alternativeto.net for one. That only stays
+      # honest if something refreshes them, and nobody remembers to: the star
+      # count sat a star behind for as long as it took someone to notice. This
+      # is that something. It cannot fail the build — see the script.
+      - name: Refresh the vendored badges
+        run: tools/refresh-badges.sh
+
       # Catches broken internal links and bad templates before publishing.
       # External links are skipped: they rate-limit and would fail the build
       # for reasons that have nothing to do with the commit.
