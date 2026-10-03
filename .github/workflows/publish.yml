@@ -115,6 +115,21 @@ jobs:
           rm -rf .app
           test -f public/chat/index.html
 
+      # The ivx/ai API's own page is served from /api the same way. Its
+      # repository is plain static files under public/, self-contained, so
+      # there is nothing to build, only to copy.
+      - uses: actions/checkout@v4
+        with:
+          repository: ivxlabs/ivxai-api
+          path: .api
+
+      - name: Place the API's page at /api
+        run: |
+          test -f .api/public/index.html || { echo "::error::ivxlabs/ivxai-api has no public/index.html"; exit 1; }
+          mkdir -p public/api
+          cp -R .api/public/. public/api/
+          rm -rf .api
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3

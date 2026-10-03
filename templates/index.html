@@ -69,7 +69,7 @@
     <p class="platforms__label">runs on</p>
     <ul class="platforms__grid">
       <li class="platforms__item">
-        <a class="platforms__link" href="https://addons.mozilla.org/en-GB/firefox/addon/ivx-ai-chat/">
+        <a class="platforms__link" href="https://addons.mozilla.org/firefox/addon/ivx-ai-chat/">
           <img class="platforms__logo" src="/logos/firefox.svg" alt="" loading="lazy">
           <span class="platforms__text"><span class="platforms__name">Firefox</span><span class="platforms__status">web app, extension</span></span>
         </a>
@@ -107,7 +107,7 @@
       <li class="platforms__item">
         <a class="platforms__link" href="/docs/install/#android">
           <img class="platforms__logo" src="/logos/android.svg" alt="" loading="lazy">
-          <span class="platforms__text"><span class="platforms__name">Android</span><span class="platforms__status">build from source</span></span>
+          <span class="platforms__text"><span class="platforms__name">Android</span><span class="platforms__status">APK available</span></span>
         </a>
       </li>
       <li class="platforms__item">
@@ -184,23 +184,25 @@
       <div class="feat__col">
         <p class="feat__label">available now</p>
         <ul class="feat__list">
-          <li>Support for multiple providers</li>
-          <li>Easy to use</li>
-          <li>Clean UI</li>
-          <li>Native apps for macOS, Windows and Linux</li>
+          <li>Support for most AI providers, including WebLLM</li>
+          <li>Easy to use, clean UI</li>
+          <li>Apps for macOS, Windows, Linux and Android</li>
           <li>Lightweight, and usable directly over a browser</li>
-          <li>WebLLM inference, via MLC</li>
           <li>Share chats anonymously</li>
-          <li>Chrome and Firefox extensions</li>
+          <li>Chrome and Firefox extensions for productivity</li>
+          <li>A store for MCP and tools to extend functionality</li>
         </ul>
       </div>
       <div class="feat__col">
         <p class="feat__label">planned</p>
         <ul class="feat__list feat__list--planned">
-          <li>Sync with multiple cloud services</li>
-          <li>MCP support</li>
-          <li>Tools</li>
-          <li>A store for connectors and skills</li>
+          <li>Always-on agents</li>
+          <li>Memory, so agents remember what matters</li>
+          <li>Private sync</li>
+          <li>Backups to multiple cloud storage services</li>
+          <li>Color and theme customization</li>
+          <li>Image and video generation APIs</li>
+          <li>Signed releases on the Play Store, App Store and Microsoft Store</li>
           <li>Chat organization</li>
         </ul>
       </div>
@@ -221,30 +223,32 @@
         <h3 class="step__title">In the browser</h3>
         <p class="step__desc">Choose <em>Install</em> / <em>Add to Home Screen</em> to keep it as an app; after the first load it works offline.</p>
         <pre class="step__code"><code>ai.ivx.run/chat</code></pre>
-        <p class="step__foot">Some providers refuse calls made from a browser, so the web version goes through the bridge: <code>brew install ivx-bridge</code>. Not on macOS? Download it from <a href="https://github.com/ivxlabs/ivxai-app/releases/latest">Releases</a>.</p>
+        <p class="step__foot">Some providers refuse calls made from a browser, so the web version goes through the bridge: <code>brew install ivxai-bridge</code>. Not on macOS? Download it from <a href="https://github.com/ivxlabs/ivxai-app/releases/latest">Releases</a>.</p>
       </article>
       <article class="step">
         <p class="step__n">02</p>
-        <h3 class="step__title">The desktop app</h3>
+        <h3 class="step__title">The apps</h3>
         <p class="step__desc">The same UI in a native window, with the same bridge running inside it. Nothing to configure.</p>
         <pre class="step__code"><code><span class="o-sigil">$</span> brew tap ivxlabs/tap
 <span class="o-sigil">$</span> brew trust ivxlabs/tap
 <span class="o-sigil">$</span> brew install --cask ivxai-chat</code></pre>
+        <p class="step__foot">On Windows, Linux and Android, take the installer or APK from <a href="https://github.com/ivxlabs/ivxai-app/releases/latest">Releases</a>.</p>
       </article>
       <article class="step">
         <p class="step__n">03</p>
         <h3 class="step__title">From source</h3>
-        <p class="step__desc">The desktop app and the bridge. You need Rust, Node and the Tauri prerequisites; the web UI arrives as a submodule.</p>
-        <pre class="step__code"><code><span class="o-sigil">$</span> git clone --recurse-submodules https://github.com/ivxlabs/ivxai-app
+        <p class="step__desc">The desktop app and the bridge. You need Rust, Node and the Tauri prerequisites.</p>
+        <pre class="step__code"><code><span class="o-sigil">$</span> git clone https://github.com/ivxlabs/ivxai-app
 <span class="o-sigil">$</span> cd ivxai-app &amp;&amp; npm install
 <span class="o-sigil">$</span> npm run build</code></pre>
       </article>
     </div>
 
     <p class="note">
-      Windows and Linux: take the installer from Releases. Nothing is notarised
-      or signed with a paid certificate, so Gatekeeper and SmartScreen both
-      object on first launch — the release notes say how to get past it.
+      Windows, Linux and Android: take the installer or APK from Releases.
+      Nothing is notarised or signed with a paid certificate, so Gatekeeper and
+      SmartScreen both object on first launch, and Android asks before
+      installing from your browser — the release notes say how to get past it.
     </p>
   </div>
 </section>

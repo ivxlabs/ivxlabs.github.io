@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — ivx/ai Chat{% endblock %}
+
+{% block body %}
+<a class="skip" href="#main">Skip to content</a>
+{% include "partials/nav.html" %}
+
+<main id="main" class="section">
+  <article class="wrap wrap--doc">
+    <p class="doc__crumb">
+      <a href="/posts/">posts</a> <span aria-hidden="true">/</span>
+      <time datetime="{{ page.date }}">{{ page.date | date(format="%-d %B %Y") }}</time>
+    </p>
+    <h1 class="doc__title">{{ page.title }}</h1>
+
+    <div class="doc__body">
+      {{ page.content | safe }}
+    </div>
+
+    <a href="/posts/" class="link-arrow">all posts <span aria-hidden="true">&rarr;</span></a>
+  </article>
+</main>
+
+{% include "partials/footer.html" %}
+{% endblock %}

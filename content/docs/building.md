@@ -16,7 +16,7 @@ npm install            # also installs web/
 | | |
 | --- | --- |
 | `web/` | the chat client — a browser app, no backend |
-| `crates/ivx-bridge/` | the CORS bridge: a library, and a daemon around it |
+| `crates/ivxai-bridge/` | the CORS bridge: a library, and a daemon around it |
 | `src-tauri/` | the desktop and mobile shell, which embeds that library |
 
 ## Building
@@ -24,7 +24,7 @@ npm install            # also installs web/
 | What | Command | Needs |
 | --- | --- | --- |
 | The web app | `npm run web:build` → `web/dist` | Node |
-| The bridge | `cargo build --release -p ivx-bridge` | Rust |
+| The bridge | `cargo build --release -p ivxai-bridge` | Rust |
 | The desktop app | `npm run build` | Rust, Node, [Tauri prerequisites](https://tauri.app/start/prerequisites/) |
 
 ## Running it while you work
@@ -32,7 +32,7 @@ npm install            # also installs web/
 ```
 npm run dev                       # the app, on the dev server
 npm run web:dev                   # the page alone, http://localhost:5173
-cargo run -p ivx-bridge -- -v     # the daemon, one line per request
+cargo run -p ivxai-bridge -- -v     # the daemon, one line per request
 cargo test --workspace            # the bridge's tests
 npm --prefix web run mock         # a fake provider on :8124
 ```
@@ -49,7 +49,8 @@ Nothing runs any of this on push, so run it yourself before proposing a change.
 
 ## Android and iOS
 
-Both build from the same repository but are not part of a release yet.
+Both build from the same repository. Releases include signed Android APKs;
+iOS is not part of a release yet.
 
 ```
 npm run android:init      # tauri android init, plus the overlay below
@@ -83,7 +84,7 @@ which also fails the build if a third-party origin appears in the bundle or the
 service worker's placeholders survive it.
 
 These documentation pages live there too, under `content/docs/` — so a change
-to `ivx-bridge`'s command line is two commits: the code in `ivxai-app`, and the
+to `ivxai-bridge`'s command line is two commits: the code in `ivxai-app`, and the
 page here.
 
 ## Releases

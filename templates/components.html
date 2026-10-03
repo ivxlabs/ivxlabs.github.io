@@ -1,0 +1,25 @@
+{#- Components content can call, as {{ <name … /> }} in a .md file.
+
+    A screenshot with a caption:
+
+      {{ <shot src="/posts/0-3-0/chat.png" alt="…" caption="…" /> }}
+      {{ <shot src="…" alt="…" phone={true} /> }}     narrow, centred
+
+    With no src it renders a dashed placeholder naming the file it `want`s, so
+    a missing screenshot is obvious in a preview rather than a broken image. -#}
+{% component shot(src="", want="", alt="", caption="", phone=false) %}
+<figure class="shot{% if phone %} shot--phone{% endif %}">
+  {%- if src %}
+  <img src="{{ src }}" alt="{{ alt }}" loading="lazy">
+  {%- else %}
+  <div class="shot__todo" role="img" aria-label="{{ alt }}">
+    <span>screenshot to add</span>
+    <code>{{ want }}</code>
+    <span>{{ alt }}</span>
+  </div>
+  {%- endif %}
+  {%- if caption %}
+  <figcaption>{{ caption }}</figcaption>
+  {%- endif %}
+</figure>
+{% endcomponent shot %}

@@ -1,0 +1,31 @@
+{# The list of posts. Same spec rows as the docs index, with the date where
+   the docs put the provider key. #}
+{% extends "base.html" %}
+
+{% block title %}Posts — ivx/ai Chat{% endblock %}
+
+{% block body %}
+<a class="skip" href="#main">Skip to content</a>
+{% include "partials/nav.html" %}
+
+<main id="main" class="section">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label"><span>posts</span>ivx/ai Chat</p>
+      <h1 class="sec-title">Posts</h1>
+    </div>
+
+    <dl class="spec">
+      {% for page in section.pages %}
+      <div class="spec__row">
+        <dt class="spec__key"><a href="{{ page.permalink }}">{{ page.title }}</a></dt>
+        <dd class="spec__desc">{{ page.description | default(value="") }}</dd>
+        <dd class="spec__tag"><time datetime="{{ page.date }}">{{ page.date | date(format="%-d %b %Y") }}</time></dd>
+      </div>
+      {% endfor %}
+    </dl>
+  </div>
+</main>
+
+{% include "partials/footer.html" %}
+{% endblock %}

@@ -40,7 +40,7 @@ If you also want to reach providers that refuse browser calls, run
 allow your own origin:
 
 ```
-ivx-bridge --allow-origin https://chat.example.com
+ivxai-bridge --allow-origin https://chat.example.com
 ```
 
 ## The bridge serving the app
@@ -50,11 +50,11 @@ one address, which means nothing is cross-origin and Safari has nothing to
 object to:
 
 ```
-ivx-bridge --ui-dir /srv/ivxai/dist
+ivxai-bridge --ui-dir /srv/ivxai/dist
 ```
 
 ```
-ivx-bridge 0.2.2 on http://127.0.0.1:8787
+ivxai-bridge 0.3.0 on http://127.0.0.1:8787
   accepting: http://localhost:*, https://ai.ivx.run, …
   serving:   /srv/ivxai/dist — open http://127.0.0.1:8787/
 ```
@@ -81,7 +81,7 @@ chat.example.com {
 it will refuse the proxy calls the page makes:
 
 ```
-ivx-bridge --ui-dir /srv/ivxai/dist --token <secret> --only-origin https://chat.example.com
+ivxai-bridge --ui-dir /srv/ivxai/dist --token <secret> --only-origin https://chat.example.com
 ```
 
 `--only-origin` replaces the default list rather than adding to it, so a public
@@ -91,7 +91,7 @@ Then, in the app: **Settings → CORS bypass**, set the address to
 `https://chat.example.com`, paste the same token, and choose **Look for the
 bridge**.
 
-Keep it running with `ivx-bridge --install-service` (which keeps the options
+Keep it running with `ivxai-bridge --install-service` (which keeps the options
 you gave it), or write your own systemd unit if the server has no logged-in
 user.
 

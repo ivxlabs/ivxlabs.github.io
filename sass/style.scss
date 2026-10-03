@@ -1121,6 +1121,52 @@ $adw-line:   rgba(255, 255, 255, 0.09);
 
       code { font-size: 0.82rem; line-height: 1.7; color: $ink; }
     }
+
+    h3 {
+      font-family: $mono; font-size: 0.92rem; font-weight: 500;
+      color: $ink;
+      margin: 32px 0 12px;
+    }
+  }
+}
+
+// ── Screenshots in posts ────────────────────────────────────
+.shot {
+  margin: 32px 0 36px;
+
+  img, .shot__todo {
+    display: block;
+    width: 100%;
+    border-radius: $r-lg;
+    box-shadow: inset 0 1px 0 $edge, $sh-md;
+  }
+
+  // Not a real picture: says which file it is waiting for.
+  .shot__todo {
+    display: flex; flex-direction: column; justify-content: center; gap: 8px;
+    aspect-ratio: 16 / 10;
+    padding: 24px;
+    border: 1px dashed $hair-lit;
+    box-shadow: none;
+    font-family: $mono; font-size: 0.78rem;
+    color: $ink-mute;
+    text-align: center;
+
+    code { color: $ink-dim; }
+  }
+
+  figcaption {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: $ink-mute;
+    text-align: center;
+  }
+
+  &--phone {
+    max-width: 320px;
+    margin-left: auto; margin-right: auto;
+
+    .shot__todo { aspect-ratio: 9 / 19.5; }
   }
 }
 
